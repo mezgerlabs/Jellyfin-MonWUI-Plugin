@@ -258,7 +258,8 @@ function buildManagedHomeSectionEnabledMap(cfg = {}) {
     recentRows: isRecentRowsSectionEnabled(cfg, masterEnabled),
     continueRows: isContinueRowsSectionEnabled(cfg, masterEnabled),
     nextUpRows: isNextUpRowsSectionEnabled(cfg, masterEnabled),
-    becauseYouWatched: masterEnabled && cfg?.enableBecauseYouWatched !== false,
+    // The legacy Jellyfin-only rows are replaced by the Seerr-based rows in seerr/becauseYouWatched.js.
+    becauseYouWatched: false,
     genreHubs: masterEnabled && cfg?.enableGenreHubs !== false,
     directorRows: masterEnabled && cfg?.enableDirectorRows !== false,
   };
@@ -779,7 +780,7 @@ export function getConfig() {
     useRandomContent: localStorage.getItem('useRandomContent') !== 'false',
     fullscreenMode: localStorage.getItem('fullscreenMode') === 'true' ? true : false,
     listLimit: 20,
-    version: "v3.8.1",
+    version: "v3.9.0",
     historySize: 20,
     updateInterval: 300000,
     nextTracksSource: localStorage.getItem('nextTracksSource') || 'playlist',
@@ -1456,6 +1457,7 @@ export function getHomeSectionsRuntimeConfig(source = null) {
     enableTmdbTopMoviesRowsSection: enabledMap.tmdbTopMoviesRows,
     enableTmdbTrailerRowsSection: enabledMap.tmdbTrailerRows,
     enableBecauseYouWatched: enabledMap.becauseYouWatched,
+    enableSerrBecauseYouWatched: masterEnabled && cfg.enableBecauseYouWatched !== false,
     enableGenreHubs: enabledMap.genreHubs,
     enableDirectorRows: enabledMap.directorRows,
     enableRecentRows: masterEnabled && cfg.enableRecentRows !== false,

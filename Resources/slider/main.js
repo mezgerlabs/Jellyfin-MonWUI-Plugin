@@ -179,13 +179,19 @@ function bootSerrIntegrationOnce() {
 
   bootModule("./modules/seerr/searchBridge.js", "cleanupSerrSearchBridge", "initSerrSearchBridge");
   bootModule("./modules/seerr/itemPageBridge.js", "cleanupSerrItemPageBridge", "initSerrItemPageBridge");
+  bootModule("./modules/seerr/discover.js", "cleanupSerrDiscover", "initSerrDiscover");
+  bootModule("./modules/seerr/becauseYouWatched.js", "cleanupSerrBecauseYouWatched", "initSerrBecauseYouWatched");
 }
 
 function cleanupSerrIntegration() {
   try { window.cleanupSerrSearchBridge?.(); } catch {}
   try { window.cleanupSerrItemPageBridge?.(); } catch {}
+  try { window.cleanupSerrDiscover?.(); } catch {}
+  try { window.cleanupSerrBecauseYouWatched?.(); } catch {}
   window.cleanupSerrSearchBridge = null;
   window.cleanupSerrItemPageBridge = null;
+  window.cleanupSerrDiscover = null;
+  window.cleanupSerrBecauseYouWatched = null;
   window.__monwuiSerrIntegrationBooted = false;
 }
 

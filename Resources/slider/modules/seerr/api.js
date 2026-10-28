@@ -93,6 +93,22 @@ export async function searchSerr(query, { page = 1, language = "" } = {}) {
   return request(`/search?${qs.toString()}`);
 }
 
+function pageQuery({ page = 1, language = "" } = {}) {
+  const qs = new URLSearchParams();
+  qs.set("page", String(Math.max(1, Number(page) || 1)));
+  if (language) qs.set("language", language);
+  return qs.toString();
+}
+
+export async function discoverSerr(category, options = {}) {
+  return request(`/discover/${encodeURIComponent(String(category || ""))}?${pageQuery(options)}`);
+}
+
+export async function getSerrRecommendations(mediaType, id, options = {}) {
+  const kind = mediaType === "tv" ? "tv" : "movie";
+  return request(`/recommendations/${kind}/${Number(id) || 0}?${pageQuery(options)}`);
+}
+
 function metadataQuery({ language = "" } = {}) {
   const qs = new URLSearchParams();
   if (language) qs.set("language", language);
