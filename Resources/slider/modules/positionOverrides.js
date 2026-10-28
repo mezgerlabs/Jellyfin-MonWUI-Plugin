@@ -153,7 +153,7 @@ function isElementVisible(element) {
 }
 
 function findVisibleSkinHeader() {
-  const candidates = document.querySelectorAll('.skinHeader:not(.osdHeader)');
+  const candidates = document.querySelectorAll('.skinHeader:not(.osdHeader), header.MuiAppBar-root');
   for (const header of candidates) {
     if (isElementVisible(header)) return header;
   }
