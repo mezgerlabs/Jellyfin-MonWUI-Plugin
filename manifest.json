@@ -13,8 +13,8 @@
         "changelog": "v3.8.1\n\nFixes:\n- Home slider no longer slides under the top menu on Jellyfin 12 (the slider now finds Jellyfin 12's new header bar)",
         "targetAbi": "12.0.0.0",
         "sourceUrl": "https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin/releases/download/v3.8.1/JMSFusion-3.8.1.0-server.zip",
-        "checksum": "set-by-release-workflow",
-        "timestamp": "2026-10-28T23:11:42Z"
+        "checksum": "d49c4cf76e0a1480873d096f568a12d0",
+        "timestamp": "2026-10-28T23:14:51Z"
       },
       {
         "version": "3.8.0.0",
