@@ -205,7 +205,7 @@ export function ensureDiscoverStyles() {
     .monwui-discover-badge.requested { background: #6a1b9a; color: #fff; }
     .monwui-discover-name { font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .monwui-discover-meta { font-size: 12px; opacity: .7; }
-    .monwui-discover-action .monwui-serr-btn { min-height: 34px; padding: 7px 10px; text-decoration: none; width: 100%; }
+    .monwui-discover-action .monwui-serr-btn { box-sizing: border-box; line-height: 1.2; min-height: 34px; padding: 7px 10px; text-decoration: none; width: 100%; }
     .monwui-discover-done { background: rgba(255,255,255,0.12) !important; color: inherit !important; cursor: default !important; }
     .monwui-discover-more { display: flex; justify-content: center; padding-top: 18px; }
     .monwui-discover-status { opacity: .75; padding: 24px 0; text-align: center; }

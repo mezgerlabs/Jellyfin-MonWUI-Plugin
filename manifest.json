@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/mezgerlabs/Jellyfin-MonWUI-Plugin/main/img/icon.png",
     "versions": [
       {
+        "version": "3.9.1.0",
+        "changelog": "v3.9.1\n\nFixes:\n- Discover: the Open button on titles already in your library is now the same size as the Request buttons",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin/releases/download/v3.9.1/JMSFusion-3.9.1.0-server.zip",
+        "checksum": "set-by-release-workflow",
+        "timestamp": "2026-10-29T00:00:00Z"
+      },
+      {
         "version": "3.9.0.0",
         "changelog": "v3.9.0\n\nNew:\n- Discover: a Discover link in the top menu opens Seerr's trending, popular and upcoming movies and shows, each with a Request button\n- \"Because you watched\" rows now come from Seerr recommendations for your recently watched titles, ranked by the genres you watch most, with Request buttons for titles you don't have yet\n\nChanges:\n- The old Jellyfin-only \"Because you watched\" rows are replaced by the Seerr-based rows (same on/off setting)\n\nRequires Seerr to be connected in MonWUI Settings > Seerr & Arr Integration.",
         "targetAbi": "12.0.0.0",
