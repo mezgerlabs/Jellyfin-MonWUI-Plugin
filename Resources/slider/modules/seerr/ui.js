@@ -946,67 +946,7 @@ function renderSearchResults(host, results, options = {}) {
       </div>
     `;
 
-    const handleRequest = async (btn, is4K = false) => {
-      const old = btn.innerHTML;
-      let effectiveIs4K = is4K === true;
-      try {
-        btn.disabled = true;
-        if (mediaType === "collection") {
-          btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("loadingText", "Yükleniyor..."))}</span>`;
-          await openSerrCollectionRequestModal(result, { source: text(options.source, "search") });
-          return;
-        }
-        const payload = {
-          mediaType,
-          mediaId: id,
-          tvdbId: Number(result?.tvdbId || result?.tvdb_id || 0) || undefined,
-          title,
-          posterUrl: img,
-          requestAllSeasons: mediaType === "tv",
-          seasons: [],
-          source: text(options.source, "search"),
-          is4K: effectiveIs4K
-        };
-        const confirmed = await confirmRequestBeforeSend(payload, options.access);
-        if (!confirmed) return;
-        if (confirmed === "4k") {
-          payload.is4K = true;
-          effectiveIs4K = true;
-        }
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
-        const response = await createSerrRequest(payload);
-        if (response?.ok === false) {
-          const err = new Error(response?.error || L("serrRequestFailed", "İstek oluşturulamadı."));
-          err.payload = response;
-          throw err;
-        }
-        if (mediaType === "movie" && shouldUseDirectArrMovieFallback(options.access) && shouldFallbackMovieToArr(response)) {
-          const arrResult = await requestMovieFromArr({ __tmdbId: id, Name: title }, { tmdbId: id, title, is4K: payload.is4K === true });
-          notify(arrStatusMessage(arrResult), "success");
-          try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
-          return;
-        }
-        notify(statusMessage(response), statusType(response));
-        try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
-      } catch (error) {
-        if (mediaType === "movie" && shouldUseDirectArrMovieFallback(options.access) && !isJellyfinAlreadyAvailableError(error)) {
-          try {
-            const arrResult = await requestMovieFromArr({ __tmdbId: id, Name: title }, { tmdbId: id, title, is4K: effectiveIs4K });
-            notify(arrStatusMessage(arrResult), "success");
-            try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
-            return;
-          } catch (arrError) {
-            notify(arrError?.message || requestErrorMessage(error), "error");
-            return;
-          }
-        }
-        notify(requestErrorMessage(error), "error");
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = old;
-      }
-    };
+    const handleRequest = (btn, is4K = false) => requestSerrResult(result, btn, options, is4K);
 
     row.querySelector("[data-serr-result-request]")?.addEventListener("click", (event) => {
       handleRequest(event.currentTarget, false).catch(() => {});
@@ -1015,4 +955,71 @@ function renderSearchResults(host, results, options = {}) {
     frag.appendChild(row);
   });
   host.appendChild(frag);
+}
+
+export async function requestSerrResult(result, btn, options = {}, is4K = false) {
+  const mediaType = resultMediaType(result);
+  const id = Number(result?.id);
+  const title = resultTitle(result);
+  const img = posterUrl(result);
+  const old = btn.innerHTML;
+  let effectiveIs4K = is4K === true;
+  try {
+    btn.disabled = true;
+    if (mediaType === "collection") {
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("loadingText", "Yükleniyor..."))}</span>`;
+      await openSerrCollectionRequestModal(result, { source: text(options.source, "search") });
+      return;
+    }
+    const payload = {
+      mediaType,
+      mediaId: id,
+      tvdbId: Number(result?.tvdbId || result?.tvdb_id || 0) || undefined,
+      title,
+      posterUrl: img,
+      requestAllSeasons: mediaType === "tv",
+      seasons: [],
+      source: text(options.source, "search"),
+      is4K: effectiveIs4K
+    };
+    const confirmed = await confirmRequestBeforeSend(payload, options.access);
+    if (!confirmed) return;
+    if (confirmed === "4k") {
+      payload.is4K = true;
+      effectiveIs4K = true;
+    }
+
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>${escapeHtml(L("serrRequestSending", "Gönderiliyor..."))}</span>`;
+    const response = await createSerrRequest(payload);
+    if (response?.ok === false) {
+      const err = new Error(response?.error || L("serrRequestFailed", "İstek oluşturulamadı."));
+      err.payload = response;
+      throw err;
+    }
+    if (mediaType === "movie" && shouldUseDirectArrMovieFallback(options.access) && shouldFallbackMovieToArr(response)) {
+      const arrResult = await requestMovieFromArr({ __tmdbId: id, Name: title }, { tmdbId: id, title, is4K: payload.is4K === true });
+      notify(arrStatusMessage(arrResult), "success");
+      try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
+      return true;
+    }
+    notify(statusMessage(response), statusType(response));
+    try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
+    return statusType(response) === "success" || response?.duplicate === true;
+  } catch (error) {
+    if (mediaType === "movie" && shouldUseDirectArrMovieFallback(options.access) && !isJellyfinAlreadyAvailableError(error)) {
+      try {
+        const arrResult = await requestMovieFromArr({ __tmdbId: id, Name: title }, { tmdbId: id, title, is4K: effectiveIs4K });
+        notify(arrStatusMessage(arrResult), "success");
+        try { window.dispatchEvent(new CustomEvent("monwui:serr-requests-changed")); } catch {}
+        return true;
+      } catch (arrError) {
+        notify(arrError?.message || requestErrorMessage(error), "error");
+        return;
+      }
+    }
+    notify(requestErrorMessage(error), "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = old;
+  }
 }

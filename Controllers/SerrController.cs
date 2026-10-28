@@ -254,6 +254,72 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             return Ok(response.Payload);
         }
 
+        private static readonly Dictionary<string, string> DiscoverPaths = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["trending"] = "/discover/trending",
+            ["movies"] = "/discover/movies",
+            ["movies-upcoming"] = "/discover/movies/upcoming",
+            ["tv"] = "/discover/tv",
+            ["tv-upcoming"] = "/discover/tv/upcoming"
+        };
+
+        [HttpGet("discover/{category}")]
+        public async Task<IActionResult> Discover(string category, [FromQuery] int page = 1, [FromQuery] string? language = null, CancellationToken cancellationToken = default)
+        {
+            if (!DiscoverPaths.TryGetValue(category ?? string.Empty, out var path))
+            {
+                return BadRequest(new { ok = false, error = "Unknown discover category." });
+            }
+
+            return await ProxySerrList(path, page, language, cancellationToken);
+        }
+
+        [HttpGet("recommendations/{mediaType}/{id:int}")]
+        public async Task<IActionResult> Recommendations(string mediaType, int id, [FromQuery] int page = 1, [FromQuery] string? language = null, CancellationToken cancellationToken = default)
+        {
+            var kind = Same(mediaType, "tv") ? "tv" : Same(mediaType, "movie") ? "movie" : null;
+            if (kind is null || id <= 0)
+            {
+                return BadRequest(new { ok = false, error = "Unknown media type." });
+            }
+
+            return await ProxySerrList("/" + kind + "/" + id.ToString(CultureInfo.InvariantCulture) + "/recommendations", page, language, cancellationToken);
+        }
+
+        private async Task<IActionResult> ProxySerrList(string path, int page, string? language, CancellationToken cancellationToken)
+        {
+            var userCheck = TryGetRequestUser();
+            if (userCheck.Result is not null)
+            {
+                return userCheck.Result;
+            }
+
+            var cfg = GetConfig();
+            var guard = EnsureConfigured(cfg);
+            if (guard is not null) return guard;
+
+            var qs = new Dictionary<string, string>
+            {
+                ["page"] = Math.Clamp(page, 1, 500).ToString(CultureInfo.InvariantCulture)
+            };
+            var lang = NormalizeLanguage(string.IsNullOrWhiteSpace(language) ? cfg.SerrDefaultLanguage : language);
+            if (!string.IsNullOrWhiteSpace(lang)) qs["language"] = lang;
+
+            var response = await SendSerrAsync(cfg, HttpMethod.Get, path + "?" + BuildQueryString(qs), null, cancellationToken);
+            if (!response.Ok)
+            {
+                return StatusCode(502, new
+                {
+                    ok = false,
+                    error = response.Error,
+                    status = response.StatusCode
+                });
+            }
+
+            NoCache();
+            return Ok(response.Payload);
+        }
+
         [HttpGet("metadata/tv/{id:int}")]
         public async Task<IActionResult> GetTvMetadata(int id, [FromQuery] string? language = null, CancellationToken cancellationToken = default)
         {
