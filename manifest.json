@@ -13,8 +13,8 @@
         "changelog": "v3.8.0 (mezgerlabs fork)\n\nChanges:\n- Supports Jellyfin 12 (built against 12.4, .NET 10)\n- Update checks and GitHub links now point to github.com/mezgerlabs/Jellyfin-MonWUI-Plugin\n\nThis release does not support Jellyfin 10.11; use 3.7.0 there.",
         "targetAbi": "12.0.0.0",
         "sourceUrl": "https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin/releases/download/v3.8.0/JMSFusion-3.8.0.0-server.zip",
-        "checksum": "2fc69eb6b7045e3958ed5d9c26f176e8",
-        "timestamp": "2026-10-28T22:39:24Z"
+        "checksum": "12f6ea67d994d03f5b238a06e49ca4f1",
+        "timestamp": "2026-10-28T22:42:54Z"
       },
       {
         "version": "3.7.0.0",
