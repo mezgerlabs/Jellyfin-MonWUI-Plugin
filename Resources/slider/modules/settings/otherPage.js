@@ -481,9 +481,9 @@ export function createAboutPanel(labels) {
   supportInfo.style.marginBottom = '10px';
 
   const githubLink = document.createElement('a');
-  githubLink.href = 'https://github.com/G-grbz/Jellyfin-MonWUI-Plugin';
+  githubLink.href = 'https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin';
   githubLink.target = '_blank';
-  githubLink.textContent = labels.aboutGithub || 'GitHub: https://github.com/G-grbz/Jellyfin-MonWUI-Plugin';
+  githubLink.textContent = labels.aboutGithub || 'GitHub: https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin';
   githubLink.style.display = 'block';
   githubLink.style.marginBottom = '10px';
   githubLink.style.color = '#00a8ff';
@@ -549,7 +549,7 @@ export function createAboutPanel(labels) {
     resultSpan.textContent = '';
 
     try {
-      const { version: latest, html_url } = await fetchLatestGitHubVersion("G-grbz", "Jellyfin-MonWUI-Plugin");
+      const { version: latest, html_url } = await fetchLatestGitHubVersion("mezgerlabs", "Jellyfin-MonWUI-Plugin");
       if (!latest) {
         statusP.textContent = labels.updateUnknown || 'Son sürüm bilgisi alınamadı.';
       } else {
