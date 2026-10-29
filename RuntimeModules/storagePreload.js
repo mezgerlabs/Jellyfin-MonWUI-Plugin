@@ -2,6 +2,20 @@ const USER_SETTINGS_URL = "/Plugins/JMSFusion/UserSettings";
 const SAVE_URL = "/Plugins/JMSFusion/UserSettings/Publish";
 const SAVE_DEBOUNCE_MS = 500;
 
+// Publishing shared settings needs the admin's Jellyfin login.
+function authHeaders() {
+  try {
+    const api = window.ApiClient;
+    if (typeof api?.getAuthorizationHeader === "function") {
+      const value = api.getAuthorizationHeader();
+      if (value) return { Authorization: value };
+    }
+    const token = (typeof api?.accessToken === "function" ? api.accessToken() : api?._accessToken) || "";
+    if (token) return { Authorization: `MediaBrowser Token="${token}"` };
+  } catch {}
+  return {};
+}
+
 const EXPLICIT_KEYS = new Set([
   "jms:settingsTargetProfile",
   "settings.allowedTabs.v1",
@@ -211,7 +225,8 @@ async function persistSnapshot(snapshot, options = {}) {
     cache: "no-store",
     headers: {
       "Accept": "application/json",
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...authHeaders()
     },
     body: JSON.stringify({
       global: payload,

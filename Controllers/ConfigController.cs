@@ -1,7 +1,11 @@
+using Jellyfin.Plugin.JMSFusion.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Jellyfin.Plugin.JMSFusion.Controllers;
 
@@ -48,7 +52,49 @@ public class ConfigController : ControllerBase
         Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
         Response.Headers["Pragma"] = "no-cache";
         Response.Headers["Expires"] = "0";
-        return Ok(new { rev = cfg.GlobalUserSettingsRevision, cfg });
+        return Ok(new { rev = cfg.GlobalUserSettingsRevision, cfg = Redact(cfg, PluginAuthFilter.IsAdmin(User)) });
+    }
+
+    // Same shape the API returned before the redaction was added (property names come from the attributes).
+    private static readonly JsonSerializerOptions RedactJsonOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
+    // Never sent to the browser.
+    private static readonly string[] HiddenFields = { "ParentalPinHash", "ParentalPinSalt" };
+
+    // Server-side credentials and other users' data, for admins only.
+    // The TMDb key stays visible: the scripts call TMDb directly.
+    private static readonly string[] AdminOnlyFields =
+    {
+        "JFApiKey",
+        "SerrApiKey",
+        "ArrSonarrApiKey",
+        "ArrSonarr4KApiKey",
+        "ArrRadarrApiKey",
+        "ArrRadarr4KApiKey",
+        "SerrRequests",
+        "WatchlistEntries",
+        "WatchlistShares",
+        "WatchlistHistoryEntries"
+    };
+
+    private static JsonNode? Redact(JMSFusionConfiguration cfg, bool isAdmin)
+    {
+        var node = JsonSerializer.SerializeToNode(cfg, RedactJsonOptions);
+        if (node is not JsonObject obj) return node;
+
+        var remove = isAdmin ? HiddenFields : HiddenFields.Concat(AdminOnlyFields).ToArray();
+        foreach (var key in obj.Select(p => p.Key).ToList())
+        {
+            if (remove.Contains(key, StringComparer.OrdinalIgnoreCase))
+            {
+                obj.Remove(key);
+            }
+        }
+
+        return obj;
     }
 
     [HttpPost]

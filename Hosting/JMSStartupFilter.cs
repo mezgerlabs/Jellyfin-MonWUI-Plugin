@@ -31,6 +31,7 @@ namespace Jellyfin.Plugin.JMSFusion
                 trailerAutomation.StartBackgroundToolBootstrap();
 
                 app.UseMiddleware<PathRewriteMiddleware>();
+                app.UseMiddleware<LegacyTokenHeaderMiddleware>();
 
                 var asm = typeof(JMSStartupFilter).Assembly;
                 var embedded = new ManifestEmbeddedFileProvider(asm, "Resources/slider");

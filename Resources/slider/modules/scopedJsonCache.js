@@ -1,3 +1,5 @@
+import { getEmbyHeaders } from "../../Plugins/JMSFusion/runtime/api.js";
+
 const API_BASE = "/Plugins/JMSFusion/ScopedCache";
 const STORE_REGISTRY = new Map();
 const LEGACY_DB_CLEANUP_STARTED = new Set();
@@ -133,9 +135,9 @@ async function readScopePayload(cacheType, scope, { allowRemoteRead = true } = {
     method: "GET",
     cache: "no-store",
     credentials: "same-origin",
-    headers: {
+    headers: getEmbyHeaders({
       "Accept": "application/json"
-    }
+    })
   });
 
   if (!response.ok) {
@@ -153,10 +155,10 @@ async function writeScopePayload(cacheType, scope, payload, { keepalive = false 
     cache: "no-store",
     credentials: "same-origin",
     keepalive: keepalive === true,
-    headers: {
+    headers: getEmbyHeaders({
       "Accept": "application/json",
       "Content-Type": "application/json"
-    },
+    }),
     body: JSON.stringify(payload || {})
   });
 
