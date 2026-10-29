@@ -1,6 +1,6 @@
 import { createSection } from "./shared.js";
 import { showNotification } from "../player/ui/notification.js";
-import { getSessionInfo } from "../../../Plugins/JMSFusion/runtime/api.js";
+import { getEmbyHeaders, getSessionInfo } from "../../../Plugins/JMSFusion/runtime/api.js";
 
 const API_BASE = "/Plugins/JMSFusion/ScopedCache";
 const BACKUP_FORMAT = "jms-scoped-cache-backup";
@@ -119,7 +119,7 @@ async function readScopedCache(cacheType, scope) {
     method: "GET",
     cache: "no-store",
     credentials: "same-origin",
-    headers: { Accept: "application/json" }
+    headers: getEmbyHeaders({ Accept: "application/json" })
   });
 
   if (!response.ok) {
@@ -136,10 +136,10 @@ async function writeScopedCache(cacheType, scope, payload) {
     method: "POST",
     cache: "no-store",
     credentials: "same-origin",
-    headers: {
+    headers: getEmbyHeaders({
       Accept: "application/json",
       "Content-Type": "application/json"
-    },
+    }),
     body: JSON.stringify(payload && typeof payload === "object" && !Array.isArray(payload) ? payload : {})
   });
 
@@ -156,7 +156,7 @@ async function deleteScopedCache(cacheType, scope) {
     method: "DELETE",
     cache: "no-store",
     credentials: "same-origin",
-    headers: { Accept: "application/json" }
+    headers: getEmbyHeaders({ Accept: "application/json" })
   });
 
   if (!response.ok) {

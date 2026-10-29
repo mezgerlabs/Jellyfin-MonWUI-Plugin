@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/mezgerlabs/Jellyfin-MonWUI-Plugin/main/img/icon.png",
     "versions": [
       {
+        "version": "3.10.0.0",
+        "changelog": "v3.10.0\n\nSecurity:\n- The plugin's API now requires a Jellyfin login. Before, anyone who could reach the server could read the plugin settings (including the saved Jellyfin, Seerr and Sonarr/Radarr API keys) and change them\n- Requests are tied to the signed-in user; the X-Emby-UserId header and userId query value can no longer be used to act as another user\n- Server settings, patching index.html, publishing shared settings, the lyrics job and trailer diagnostics are admin-only\n- Non-admins no longer receive API keys, the parental PIN hash or other users' watchlists and requests from the settings endpoint\n\nFixes:\n- Works with Jellyfin 12's login header: plugin requests sent with the old X-Emby-Token header are accepted again on the plugin's own endpoints\n- The plugin's dashboard page, shared-settings sync and cache requests now send the signed-in user's token",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin/releases/download/v3.10.0/JMSFusion-3.10.0.0-server.zip",
+        "checksum": "set-by-release-workflow",
+        "timestamp": "2026-10-29T00:00:00Z"
+      },
+      {
         "version": "3.9.1.0",
         "changelog": "v3.9.1\n\nFixes:\n- Discover: the Open button on titles already in your library is now the same size as the Request buttons",
         "targetAbi": "12.0.0.0",

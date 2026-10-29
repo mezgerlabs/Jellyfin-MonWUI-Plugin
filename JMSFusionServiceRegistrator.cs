@@ -3,6 +3,7 @@ using MediaBrowser.Controller.Plugins;
 using Jellyfin.Plugin.JMSFusion.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jellyfin.Plugin.JMSFusion
 {
@@ -14,6 +15,7 @@ namespace Jellyfin.Plugin.JMSFusion
             services.AddSingleton<CinemaPreRollCacheService>();
             services.AddSingleton<ScopedCacheJsonService>();
             services.AddTransient<IStartupFilter, JMSStartupFilter>();
+            services.Configure<MvcOptions>(options => options.Filters.Add(new PluginAuthFilter()));
         }
     }
 }

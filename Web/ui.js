@@ -23,6 +23,8 @@
   const MONWUI_SUBTAB_STORAGE_KEY = "jmsfusion-monwui-requested-subtab";
 
   const api = (p) => `${jfRoot}/Plugins/JMSFusion/${p}`;
+  // The plugin API requires the signed-in admin's token.
+  const apiFetch = (url, init = {}) => fetch(url, { ...init, headers: { ...(init.headers || {}), ...authHeaders() } });
   const esc = (s) => (s ?? "").toString().replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[m]));
 
   const fallbackLabels = {
@@ -413,7 +415,7 @@
   }
 
   async function loadConfig(view) {
-    const r = await fetch(api("Configuration"));
+    const r = await apiFetch(api("Configuration"));
     if (!r.ok) throw new Error("Failed to load config: " + r.status);
     const cfg = await r.json();
     view.__physicalPatchFallbackEnabled = !!cfg.enablePhysicalIndexHtmlPatchFallback;
@@ -425,7 +427,7 @@
   }
 
   async function postConfiguration(body) {
-    const r = await fetch(api("Configuration"), {
+    const r = await apiFetch(api("Configuration"), {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(body)
@@ -445,7 +447,7 @@
   }
 
   async function getStatus() {
-    const r = await fetch(api("Status"));
+    const r = await apiFetch(api("Status"));
     if (!r.ok) throw new Error("Failed to get status: " + r.status);
     return await r.json();
   }
@@ -505,7 +507,7 @@
   }
 
   async function showSnippet(view) {
-    const r = await fetch(api("Snippet"));
+    const r = await apiFetch(api("Snippet"));
     if (!r.ok) throw new Error("Failed to get snippet: " + r.status);
     const html = await r.text();
     const box = view.querySelector("#snippet");
@@ -517,7 +519,7 @@
   }
 
   async function getEnv() {
-    const r = await fetch(api("Env"));
+    const r = await apiFetch(api("Env"));
     if (!r.ok) throw new Error("Failed to get env: " + r.status);
     return await r.json();
   }
@@ -693,7 +695,7 @@
 
   async function doPatch(view, kind) {
     const ep = kind === "patch" ? "Patch" : "Unpatch";
-    const r = await fetch(api(ep), { method: "POST" });
+    const r = await apiFetch(api(ep), { method: "POST" });
     if (!r.ok) throw new Error(`${ep} failed: ` + r.status);
 
     showMessage(
@@ -747,7 +749,7 @@
           snapshot[key] = localStorage.getItem(key);
         }
 
-        const r = await fetch(api("UserSettings/Publish"), {
+        const r = await apiFetch(api("UserSettings/Publish"), {
           method: "POST",
           headers: { "Content-Type": "application/json", ...authHeaders() },
           body: JSON.stringify({ global: snapshot })
