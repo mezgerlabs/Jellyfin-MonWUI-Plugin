@@ -1,3 +1,4 @@
+using Jellyfin.Plugin.JMSFusion.Core;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System;
@@ -218,6 +219,15 @@ namespace Jellyfin.Plugin.JMSFusion.Controllers
             EnsureMigrated(cfg, plugin);
 
             var prof = NormalizeProfile(req.Profile ?? profile);
+
+            // When an admin has locked the shared settings, other users' saves stay in their browser only.
+            if (cfg.ForceGlobalUserSettings && !PluginAuthFilter.IsAdmin(User))
+            {
+                NoCache();
+                var currentRev = prof == "mobile" ? cfg.GlobalUserSettingsRevisionMobile : cfg.GlobalUserSettingsRevisionDesktop;
+                return Ok(new { ok = true, profile = prof, rev = currentRev, skipped = true, forced = true });
+            }
+
             var json = SerializeSanitizedSnapshot(req.Global);
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

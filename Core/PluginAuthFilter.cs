@@ -53,7 +53,6 @@ namespace Jellyfin.Plugin.JMSFusion.Core
         private static readonly HashSet<string> AdminActions = new(StringComparer.OrdinalIgnoreCase)
         {
             "Config.Update",
-            "UserSettings.Publish",
             "Lyrics.Run",
             "Lyrics.Cancel",
             "Trailers.Diag"
