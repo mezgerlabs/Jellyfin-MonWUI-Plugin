@@ -780,7 +780,7 @@ export function getConfig() {
     useRandomContent: localStorage.getItem('useRandomContent') !== 'false',
     fullscreenMode: localStorage.getItem('fullscreenMode') === 'true' ? true : false,
     listLimit: 20,
-    version: "v3.10.0",
+    version: "v3.10.1",
     historySize: 20,
     updateInterval: 300000,
     nextTracksSource: localStorage.getItem('nextTracksSource') || 'playlist',
