@@ -13,8 +13,8 @@
         "changelog": "v3.10.1\n\nFixes:\n- Saving MonWUI settings failed with \"forbidden\" for users who aren't Jellyfin admins (regression in 3.10.0). Signed-in users can save again; when an admin has turned on \"force global settings\", other users' changes stay in their own browser and no longer overwrite the shared settings",
         "targetAbi": "12.0.0.0",
         "sourceUrl": "https://github.com/mezgerlabs/Jellyfin-MonWUI-Plugin/releases/download/v3.10.1/JMSFusion-3.10.1.0-server.zip",
-        "checksum": "set-by-release-workflow",
-        "timestamp": "2026-11-04T00:00:00Z"
+        "checksum": "df37c1606ba323df64e770f5c5dfdf99",
+        "timestamp": "2026-11-04T02:42:38Z"
       },
       {
         "version": "3.10.0.0",
